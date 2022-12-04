@@ -39,4 +39,37 @@ RSpec.describe 'database' do
     result = run_script(script)
     expect(result[-2]).to eq('db> Error: Table full.')
   end
+
+  it 'allows inserting text equal to max length' do
+    long_username = "a"*32
+    long_email = "a"*255
+    script = [
+      "insert 1 #{long_username} #{long_email}",
+      "select",
+      ".exit",
+    ]
+    result = run_script(script)
+    expect(result).to match_array([
+      "db> Executed.",
+      "db> (1, #{long_username}, #{long_email})",
+      "Executed.",
+      "db> "
+    ])
+  end
+
+  it 'error if string input is too long' do
+    long_username = "a"*40
+    long_email = "a"*256
+    script = [
+      "insert 1 #{long_username} #{long_email}",
+      "select",
+      ".exit"
+    ]
+    result = run_script(script)
+    expect(result).to match_array([
+      "db> String too long.",
+      "db> Executed.",
+      "db> "
+    ])
+  end
 end
