@@ -72,4 +72,18 @@ RSpec.describe 'database' do
       "db> "
     ])
   end
+
+  it 'error if id is negative' do
+    script = [
+      "insert -1 user foo@test.com",
+      "select",
+      ".exit"
+    ]
+    result = run_script(script)
+    expect(result).to match_array([
+      "db> ID must be positive.",
+      "db> Executed.",
+      "db> "
+    ])
+  end
 end
