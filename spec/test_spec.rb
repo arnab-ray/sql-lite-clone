@@ -86,4 +86,27 @@ RSpec.describe 'database' do
       "db> "
     ])
   end
+
+  it 'persist data after closing connection' do
+    result1 = run_script([
+      "insert 1 user1 foo1@test.com",
+      ".exit"
+    ])
+
+    expect(result1).to match_array([
+      "db> Executed.",
+      "db> "
+    ])
+
+    result2 = run_script([
+      "select",
+      ".exit"
+    ])
+
+    expect(result2).to match_array([
+      "db> (1, user1, foo1@test.com)",
+      "Executed.",
+      "db> "
+    ])
+  end
 end
